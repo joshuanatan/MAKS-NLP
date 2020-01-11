@@ -88,7 +88,7 @@ CREATE TABLE `tbl_wit_ai_acc` (
   `date_wit_ai_acc_last_modified` datetime DEFAULT NULL,
   `id_user_wit_ai_acc_last_modified` int(11) DEFAULT NULL
 );
-
+select * from tbl_samples;
 create table tbl_intent(
 	id_submit_intent int primary key auto_increment,
     id_wit_ai_acc int,

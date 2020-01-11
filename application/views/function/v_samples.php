@@ -43,9 +43,7 @@
             <th style = "width:10%">Samples</th>
             <th style = "width:10%">Intent</th>
             <th style = "width:10%">Entity</th>
-            <th style = "width:10%">Date Samples Add</th>
-            <th style = "width:10%">Date Samples Edit</th>
-            <th style = "width:10%">Date Samples Delete</th>
+            <th style = "width:10%">Last Modified</th>
             <th style = "width:10%">Status Samples</th>
             <th style = "width:5%">Action</th>
         </thead>
@@ -54,11 +52,9 @@
             <tr>
                 <td><?php echo $a+1;?></td>
                 <td id = "samples<?php echo $samples[$a]['id_submit_samples'];?>"><?php echo $samples[$a]["samples"];?></td>
-                <td><?php echo $samples[$a]["entity_value"];?></td>
+                <td><?php echo $samples[$a]["intent"];?></td>
                 <td><button data-toggle = "modal" data-target = "#entityDetail" onclick = "getSamplesEntity(<?php echo $samples[$a]['id_submit_samples'];?>)" type = 'button' class = 'btn btn-primary btn-sm col-lg-12'>ENTITY LIST</button></td>
-                <td><?php echo $samples[$a]["tgl_samples_add"];?></td>
-                <td><?php echo $samples[$a]["tgl_samples_edit"];?></td>
-                <td><?php echo $samples[$a]["tgl_samples_delete"];?></td>
+                <td><?php echo $samples[$a]["tgl_samples_last_modified"];?></td>
                 <td>
                     <?php if($samples[$a]["status_aktif_samples"] == 1):?>
                     <button type = "button" class = "btn btn-primary btn-sm col-lg-12">UPLOADED</button>
@@ -92,13 +88,13 @@
                 <form action = "<?php echo base_url();?>function/samples/insert" method = "POST">
                     <div class = "form-group">
                         <h5>Text</h5>
-                        <input onmouseup = "getSelectedText()" id = "sample_sentence" type = "text" class = "form-control" name = "sample_sentence">
+                        <input required onmouseup = "getSelectedText()" id = "sample_sentence" type = "text" class = "form-control" name = "sample_sentence">
                     </div>
                     <div class = "form-group">
                         <h5>Intent</h5>
                         <select class = "form-control" data-plugin = "select2" name = "intent">
                             <?php for($a = 0; $a<count($intent); $a++):?>
-                            <option value = "<?php echo $intent[$a]["entity_value"];?>"><?php echo $intent[$a]["entity_value"];?></option>
+                            <option value = "<?php echo $intent[$a]["intent"];?>"><?php echo $intent[$a]["intent"];?></option>
                             <?php endfor;?>
                         </select>
                     </div>
