@@ -72,10 +72,10 @@
                     <button type = "button" data-toggle = "modal" data-target = "#editEntity<?php echo $a;?>" class = "btn btn-primary btn-sm col-lg-12">EDIT ENTITY</button>
                     <a href = "<?php echo base_url();?>function/entity/delete_entity/<?php echo $entity[$a]["id_submit_entity"];?>" class = "btn btn-danger btn-sm col-lg-12">DEACTIVE ENTITY</a>
                     <a href = "<?php echo base_url();?>function/entity/values/<?php echo $entity[$a]["id_submit_entity"];?>" class = "btn btn-primary btn-sm col-lg-12">MANAGE VALUES</a>
+                    <a href = "<?php echo base_url();?>function/entity/remove_entity/<?php echo $entity[$a]["id_submit_entity"];?>" class = "btn btn-dark btn-sm col-lg-12">DELETE ENTITY</a>
                     <?php elseif($entity[$a]["status_aktif_entity"] == 0):?>
                     <a href = "<?php echo base_url();?>function/entity/reupload_entity/<?php echo $entity[$a]["id_submit_entity"];?>" class = "btn btn-light btn-sm col-lg-12">ACTIVATE ENTITY</a>
                     <?php endif;?>
-                    <a href = "<?php echo base_url();?>function/entity/remove_entity/<?php echo $entity[$a]["id_submit_entity"];?>" class = "btn btn-dark btn-sm col-lg-12">DELETE ENTITY</a>
                 </td>
             </tr>
             <?php endfor;?>

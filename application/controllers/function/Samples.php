@@ -4,6 +4,7 @@ class Samples extends CI_Controller{
     private $id_wit_acc;
     public function __construct(){
         parent::__construct();
+        $this->load->library("curl");
         $this->load->library('wit');
         $where = array(
             "status_aktif_wit_ai_acc" => 1
@@ -70,7 +71,7 @@ class Samples extends CI_Controller{
             "id_wit_ai_acc" => $this->id_wit_acc
         );
         $field = array(
-            "id_submit_samples","samples","entity_value","tgl_samples_last_modified","status_aktif_samples"
+            "id_submit_samples","samples","intent","tgl_samples_last_modified","status_aktif_samples"
         );
         $result = selectRow("v_samples_list",$where,$field,"","","","","id_submit_samples");
         $data["samples"] = $result->result_array();
@@ -115,53 +116,104 @@ class Samples extends CI_Controller{
             
             $text = $this->input->post("sample_sentence");
             $checks = $this->input->post("analytics_check");
+
+
             $entity[0]["entity"] = "intent";
             $entity[0]["value"] = $this->input->post("intent");
+            $id_intent = get1Value("tbl_intent","id_submit_intent",array("intent" => $this->input->post("intent")));
+            $data = array(
+                "id_wit_ai_acc" => get1Value("tbl_wit_ai_acc","id_submit_wit_ai_acc",array("status_aktif_wit_ai_acc" => 1)),
+                "samples" => $text,
+                "status_aktif_samples" => 0,
+                "id_intent" => $id_intent,
+                "tgl_samples_last_modified" => date("Y-m-d H:i:s"),
+                "id_user_samples_last_modified" => $this->session->id_user
+            );
+            $id_samples = insertRow("tbl_samples",$data);
+
+            if($checks != ""){
+                foreach($checks as $a){
+                    if($this->input->post("entityValue".$a) == "0"){
+                        //masukin entity value baru
+                        //output entity value baru
+                        $where = array(
+                            "entity_name" => $this->input->post("entity_name".$a)
+                        );
+                        $field = array(
+                            "id_submit_entity"
+                        );
+                        $result = selectRow("tbl_entity",$where,$field);
+                        $result = $result->row();
+                        $id_entity = $result->id_submit_entity;
+                        $entity_value = $this->input->post("highlight".$a);
+                        $url = base_url()."function/entity/insert_single_entity_value";
+                        $body = array(
+                            "entity_value" => $entity_value,
+                            "entity_name" => $this->input->post("entity_name".$a),
+                            "id_entity" => $id_entity
+                        );
+                        $response = $this->curl->post($url,array(),$body);
+                        $respond = json_decode($response["response"],true);
+                        $id_entity_value = $respond["id_entity_value"];
+                    }
+                    else{
+                        $where = array(
+                            "entity_value" => $this->input->post("entityValue".$a)
+                        );
+                        $field = array(
+                            "id_submit_entity_value"
+                        );
+                        $result = selectRow("tbl_entity_value",$where,$field);
+                        $result = $result->row();
+                        $id_entity_value = $result->id_submit_entity_value;
+
+                        if($this->input->post("entityValue".$a) != $this->input->post("highlight".$a)){
+                            $expression = $this->input->post("highlight".$a);
+                            $url = base_url()."function/entity/insert_single_expression";
+                            $body = array(
+                                "id_entity_value" => $id_entity_value,
+                                "expression" => $expression,
+                            );
+                            $this->curl->post($url,array(),$body);
+                        }
+                    }
+                    
+                    $data = array(
+                        "id_samples" => $id_samples,
+                        "start_index" => $this->input->post("startIndex".$a),
+                        "end_index" => $this->input->post("endIndex".$a),
+                        "id_entity_value" => $id_entity_value
+                    );
+                    insertRow("tbl_samples_entity",$data);
+                }
+            }
 
             $b = 0;
             if($checks != ""){
                 $b++;
                 foreach($checks as $a){
                     $entity[$b]["entity"] = $this->input->post("entity_name".$a);
-                    $entity[$b]["value"] = $this->input->post("entityValue".$a);
+                    if($this->input->post("entityValue".$a) == "0"){
+                        $entity[$b]["value"] = $this->input->post("highlight".$a);
+                    }
+                    else{
+                        $entity[$b]["value"] = $this->input->post("entityValue".$a);
+                    }
                     $entity[$b]["start"] = $this->input->post("startIndex".$a);
                     $entity[$b]["end"] = $this->input->post("endIndex".$a);
                 }
             }
             $entities = $entity;
-
+            
+            $msg = "Samples is added to database, Not uploaded to Wit.ai";
+            $this->session->set_flashdata("status_samples","success");
+            $this->session->set_flashdata("msg_samples",$msg);
             $respond = $this->wit->post_samples($text,$entities);
-            $id_intent = get1Value("tbl_intent","id_submit_intent",array("intent" => $this->input->post("intent")));
             if($respond){
                 if($respond["err"]){
                     $msg = $respond["err"];
                     $this->session->set_flashdata("status_wit","error");
                     $this->session->set_flashdata("msg_wit",$msg);
-                    $data = array(
-                        "id_wit_ai_acc" => get1Value("tbl_wit_ai_acc","id_submit_wit_ai_acc",array("status_aktif_wit_ai_acc" => 1)),
-                        "samples" => $text,
-                        "status_aktif_samples" => 0,
-                        "id_intent" => $id_intent,
-                        "tgl_samples_last_modified" => date("Y-m-d H:i:s"),
-                        "id_user_samples_last_modified" => $this->session->id_user
-                    );
-                    $id_samples = insertRow("tbl_samples",$data);
-                    $checks = $this->input->post("analytics_check");
-                    if($checks != ""){
-                        foreach($checks as $a){
-                            $id_intent = get1Value("tbl_entity_value","id_submit_entity_value",array("entity_value" => $this->input->post("entityValue".$a)));
-                            $data = array(
-                                "id_samples" => $id_samples,
-                                "start_index" => $this->input->post("startIndex".$a),
-                                "end_index" => $this->input->post("endIndex".$a),
-                                "id_entity_value" => $id_intent
-                            );
-                            insertRow("tbl_samples_entity",$data);
-                        }
-                    }
-                    $msg = "Samples is added to database, Not uploaded to Wit.ai";
-                    $this->session->set_flashdata("status_samples","error");
-                    $this->session->set_flashdata("msg_samples",$msg);
                 }
                 else{
                     $respond = json_decode($respond["response"]);
@@ -169,68 +221,31 @@ class Samples extends CI_Controller{
                         $msg = "Samples is added to Wit.ai";
                         $this->session->set_flashdata("status_wit","success");
                         $this->session->set_flashdata("msg_wit",$msg);
-                        $data = array(
-                            "id_wit_ai_acc" => $this->id_wit_acc,
-                            "samples" => $this->input->post("sample_sentence"),
-                            "status_aktif_samples" => 1,
-                            "id_intent" => $id_intent,
-                            "tgl_samples_last_modified" => date("Y-m-d H:i:s"),
-                            "id_user_samples_last_modified" => $this->session->id_user
+                        $where = array(
+                            "id_submit_samples" => $id_samples
                         );
-                        $id_samples = insertRow("tbl_samples",$data);
-                        $checks = $this->input->post("analytics_check");
-                        if($checks != ""){
-                            foreach($checks as $a){
-                                $id_intent = get1Value("tbl_entity_value","id_submit_entity_value",array("entity_value" => $this->input->post("entityValue".$a)));
-                                $data = array(
-                                    "id_samples" => $id_samples,
-                                    "start_index" => $this->input->post("startIndex".$a),
-                                    "end_index" => $this->input->post("endIndex".$a),
-                                    "id_entity_value" => $id_intent
-                                );
-                                insertRow("tbl_samples_entity",$data);
-                            }
-                        }
-                        $msg = "Samples is added to database";
+                        $data = array(
+                            "status_aktif_samples" => 1,
+                        );
+                        updateRow("tbl_samples",$data,$where);
+                        $msg = "Samples is activated";
                         $this->session->set_flashdata("status_samples","success");
                         $this->session->set_flashdata("msg_samples",$msg);
+                        
                     }
                     else{
                         $msg = $respond["error"];
                         $this->session->set_flashdata("status_wit","error");
                         $this->session->set_flashdata("msg_wit",$msg);
-                        $data = array(
-                            "id_wit_ai_acc" => $this->id_wit_acc,
-                            "samples" => $text,
-                            "status_aktif_samples" => 0,
-                            "id_intent" => $id_intent,
-                            "tgl_samples_last_modified" => date("Y-m-d H:i:s"),
-                            "id_user_samples_last_modified" => $this->session->id_user
-                        );
-                        $id_samples = insertRow("tbl_samples",$data);
-                        $checks = $this->input->post("analytics_check");
-                        if($checks != ""){
-                            foreach($checks as $a){
-                                $id_intent = get1Value("tbl_entity_value","id_submit_entity_value",array("entity_value" => $this->input->post("entityValue".$a)));
-                                $data = array(
-                                    "id_samples" => $id_samples,
-                                    "start_index" => $this->input->post("startIndex".$a),
-                                    "end_index" => $this->input->post("endIndex".$a),
-                                    "id_entity_value" => $id_intent
-                                );
-                                insertRow("tbl_samples_entity",$data);
-                            }
-                        }
-                        $msg = "Samples is added to database, Not uploaded to Wit.ai";
-                        $this->session->set_flashdata("status_samples","error");
-                        $this->session->set_flashdata("msg_samples",$msg);
                     }
                 }
                 $this->redirect();
             }
         }
-        $this->session->set_flashdata("status_samples","error");
-        $this->session->set_flashdata("msg_samples",validation_errors());
+        else{
+            $this->session->set_flashdata("status_samples","error");
+            $this->session->set_flashdata("msg_samples",validation_errors());
+        }
         $this->redirect();
     }
     public function remove($id_submit_samples){
@@ -255,13 +270,6 @@ class Samples extends CI_Controller{
                 $this->session->set_flashdata("msg_wit",$msg);
             }
             else{
-                $data = array(
-                    "status_aktif_samples" => 2
-                );
-                $where = array(
-                    "id_submit_samples" => $id_submit_samples
-                );
-                updateRow("tbl_samples",$data,$where);
                 $response = json_decode($respond["response"],TRUE);
                 if(array_key_exists("error",$response)){
                     $msg = $response["error"];
@@ -272,6 +280,14 @@ class Samples extends CI_Controller{
                     $msg = "Data is successfuly removed";
                     $this->session->set_flashdata("status_wit","error");
                     $this->session->set_flashdata("msg_wit",$msg);
+                    
+                    $data = array(
+                        "status_aktif_samples" => 2
+                    );
+                    $where = array(
+                        "id_submit_samples" => $id_submit_samples
+                    );
+                    updateRow("tbl_samples",$data,$where);
                 }
             }
         }
@@ -299,13 +315,6 @@ class Samples extends CI_Controller{
                 $this->session->set_flashdata("msg_wit",$msg);
             }
             else{
-                $data = array(
-                    "status_aktif_samples" => 0
-                );
-                $where = array(
-                    "id_submit_samples" => $id_submit_samples
-                );
-                updateRow("tbl_samples",$data,$where);
                 $response = json_decode($respond["response"],TRUE);
                 if(array_key_exists("error",$response)){
                     $msg = $response["error"];
@@ -316,6 +325,14 @@ class Samples extends CI_Controller{
                     $msg = "Data is successfuly removed";
                     $this->session->set_flashdata("status_wit","error");
                     $this->session->set_flashdata("msg_wit",$msg);
+                    
+                    $data = array(
+                        "status_aktif_samples" => 0
+                    );
+                    $where = array(
+                        "id_submit_samples" => $id_submit_samples
+                    );
+                    updateRow("tbl_samples",$data,$where);
                 }
             }
         }
@@ -362,16 +379,9 @@ class Samples extends CI_Controller{
             $this->session->set_flashdata("msg_samples",$msg);
         }
         else{
-            $data = array(
-                "status_aktif_samples" => 1
-            );
-            $where = array(
-                "id_submit_samples" => $id_submit_samples
-            );
-            updateRow("tbl_samples",$data,$where);
             $response = json_decode($respond["response"],TRUE);
             if(array_key_exists("error",$response)){
-                $msg = $response["error"];
+                $msg = $response["error"]." Samples is not uploaded. Consider re-add the sample";
                 $this->session->set_flashdata("status_samples","error");
                 $this->session->set_flashdata("msg_samples",$msg);
             }
@@ -379,6 +389,14 @@ class Samples extends CI_Controller{
                 $msg = "Data is successfully reuploaded";
                 $this->session->set_flashdata("status_samples","success");
                 $this->session->set_flashdata("msg_samples",$msg);
+                
+                $data = array(
+                    "status_aktif_samples" => 1
+                );
+                $where = array(
+                    "id_submit_samples" => $id_submit_samples
+                );
+                updateRow("tbl_samples",$data,$where);
             }
             
         }

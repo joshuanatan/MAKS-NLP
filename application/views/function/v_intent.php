@@ -59,12 +59,12 @@
                 </td>
                 <td>
                     <?php if($intent[$a]["status_aktif_intent"] == 1):?>
-                    <button type = "button" data-toggle = "modal" data-target = "#editExpression" class = "btn btn-primary btn-sm col-lg-12" onclick = "loadIntent(<?php echo $intent[$a]['id_submit_intent'];?>);loadExpression(<?php echo $intent[$a]['id_submit_intent'];?>)">EDIT INTENT</button>
+                    <button type = "button" data-toggle = "modal" data-target = "#editExpression<?php echo $a;?>" class = "btn btn-primary btn-sm col-lg-12" onclick = "loadIntent(<?php echo $intent[$a]['id_submit_intent'];?>);loadExpression(<?php echo $intent[$a]['id_submit_intent'];?>)">EDIT INTENT</button>
                     <a href = "<?php echo base_url();?>function/intent/delete_intent/<?php echo $intent[$a]["id_submit_intent"];?>" class = "btn btn-danger btn-sm col-lg-12">DEACTIVE INTENT</a>
+                    <a href = "<?php echo base_url();?>function/intent/remove_intent/<?php echo $intent[$a]["id_submit_intent"];?>" class = "btn btn-dark btn-sm col-lg-12">DELETE INTENT</a>
                     <?php else:?>
                     <a href = "<?php echo base_url();?>function/intent/reupload_intent/<?php echo $intent[$a]["id_submit_intent"];?>" class = "btn btn-primary btn-sm col-lg-12">REUPLOAD INTENT</a>
                     <?php endif;?>
-                    <a href = "<?php echo base_url();?>function/intent/remove_intent/<?php echo $intent[$a]["id_submit_intent"];?>" class = "btn btn-dark btn-sm col-lg-12">REMOVE INTENT</a>
                 </td>
             </tr>
             <?php endfor;?>
@@ -101,7 +101,7 @@
     </div>
 </div>
 <?php for($a = 0; $a<count($intent); $a++):?>
-<div class = "modal fade" id = "editExpression">
+<div class = "modal fade" id = "editExpression<?php echo $a;?>">
     <div class = "modal-dialog modal-center">
         <div class = "modal-content">
             <div class = "modal-header">

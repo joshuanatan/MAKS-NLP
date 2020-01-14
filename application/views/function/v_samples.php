@@ -65,13 +65,10 @@
                 <td>
                     <?php if($samples[$a]["status_aktif_samples"] == 1):?>
                     <a href = "<?php echo base_url();?>function/samples/delete/<?php echo $samples[$a]["id_submit_samples"];?>" class = "btn btn-danger btn-sm col-lg-12">REMOVE SAMPLES</a>
+                    <a href = "<?php echo base_url();?>function/samples/remove/<?php echo $samples[$a]["id_submit_samples"];?>" class = "btn btn-dark btn-sm col-lg-12">DELETE SAMPLES</a>
                     <?php else:?>
                     <a href = "<?php echo base_url();?>function/samples/reupload/<?php echo $samples[$a]["id_submit_samples"];?>" class = "btn btn-primary btn-sm col-lg-12">REUPLOAD SAMPLES</a>
                     <?php endif;?>
-                    <?php if(false):?>
-                    <a href = "<?php echo base_url();?>function/samples/edit/<?php echo $samples[$a]["id_submit_samples"];?>" class = "btn btn-primary btn-sm col-lg-12">EDIT SAMPLES</button>
-                    <?php endif;?>
-                    <a href = "<?php echo base_url();?>function/samples/remove/<?php echo $samples[$a]["id_submit_samples"];?>" class = "btn btn-dark btn-sm col-lg-12">DELETE SAMPLES</a>
                 </td>
             </tr>
             <?php endfor;?>

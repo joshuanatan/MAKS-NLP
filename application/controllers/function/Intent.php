@@ -152,11 +152,11 @@ class Intent extends CI_Controller{
                 $this->session->set_flashdata("msg_wit","Data Exists");
             }
             else{
-                $intent = get1Value("tbl_intent","intent",array("id_submit_intent" => $this->input->post("id_submit_intent")));
+                $where = array(
+                    "id_submit_intent" => $this->input->post("id_submit_intent")
+                );
+                $intent = get1Value("tbl_intent","intent",$where);
                 $respond = $this->wit->delete_entities_value("intent",$intent);
-    
-                $intent = $this->input->post("intent");
-    
                 $msg = "";
                 if($respond){
                     if($respond["err"]){
@@ -170,6 +170,8 @@ class Intent extends CI_Controller{
                         $this->session->set_flashdata("msg_wit",$msg);
                     }
                 }
+                
+                $intent = $this->input->post("intent");
                 $respond = $this->wit->post_entities_value("intent",$intent);
                 if($respond){
                     if($respond["err"]){ 
@@ -232,7 +234,7 @@ class Intent extends CI_Controller{
                 if(!array_key_exists("error",$respond)){
                     
                     $msg = "Intent is successfully removed from Wit.ai";
-                    $this->session->set_flashdata("status_wit","success");
+                    $this->session->set_flashdata("status_wit","error");
                     $this->session->set_flashdata("msg_wit",$msg);
                     $where = array(
                         "id_submit_intent" => $id_submit_intent
@@ -245,7 +247,7 @@ class Intent extends CI_Controller{
                     );
                     updateRow("tbl_intent",$data,$where);
                     $msg = "Intent is successfully removed from database";
-                    $this->session->set_flashdata("status_entity","success");
+                    $this->session->set_flashdata("status_entity","error");
                     $this->session->set_flashdata("msg_entity",$msg);
                 }
                 else{
@@ -280,7 +282,7 @@ class Intent extends CI_Controller{
                 if(!array_key_exists("error",$respond)){
                     
                     $msg = "Intent is successfully removed from Wit.ai";
-                    $this->session->set_flashdata("status_wit","success");
+                    $this->session->set_flashdata("status_wit","error");
                     $this->session->set_flashdata("msg_wit",$msg);
                     $where = array(
                         "id_submit_intent" => $id_submit_intent
@@ -292,8 +294,8 @@ class Intent extends CI_Controller{
                         "id_user_intent_last_modified" => $this->session->id_user
                     );
                     updateRow("tbl_intent",$data,$where);
-                    $msg = "Intent is successfully removed from database";
-                    $this->session->set_flashdata("status_entity","success");
+                    $msg = "Intent is successfully deactivated";
+                    $this->session->set_flashdata("status_entity","error");
                     $this->session->set_flashdata("msg_entity",$msg);
                 }
                 else{

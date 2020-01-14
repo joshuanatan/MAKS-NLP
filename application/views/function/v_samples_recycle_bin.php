@@ -37,6 +37,7 @@
             <th style = "width:5%">#</th>
             <th>Samples</th>
             <th>Intent</th>
+            <th>Last Modified</th>
             <th style = "width:15%">Entity</th>
             <th style = "width:15%">Action</th>
         </thead>
@@ -45,7 +46,8 @@
             <tr>
                 <td><?php echo $a+1;?></td>
                 <td id = "samples<?php echo $samples[$a]['id_submit_samples'];?>"><?php echo $samples[$a]["samples"];?></td>
-                <td><?php echo $samples[$a]["entity_value"];?></td>
+                <td><?php echo $samples[$a]["intent"];?></td>
+                <td><?php echo $samples[$a]["tgl_samples_last_modified"];?></td>
                 <td><button data-toggle = "modal" data-target = "#entityDetail" onclick = "getSamplesEntity(<?php echo $samples[$a]['id_submit_samples'];?>)" type = 'button' class = 'btn btn-primary btn-sm col-lg-12'>ENTITY LIST</button></td>
                 <td>
                     <a href = "<?php echo base_url();?>function/samples/reupload/<?php echo $samples[$a]["id_submit_samples"];?>" class = "btn btn-primary btn-sm col-lg-12">REUPLOAD SAMPLES</a>

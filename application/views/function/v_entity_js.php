@@ -19,8 +19,14 @@ function loadExpression(id_submit_entity_value){
         dataType:"JSON",
         data:{id_entity_value:id_submit_entity_value},
         success:function(respond){
-            $("#expression_textarea").val(respond);
-            $("#expression_list").val(respond);
+            if(respond !== ""){
+                $("#expression_textarea"+id_submit_entity_value).val(respond);
+                $("#expression_list").val(respond);
+            }
+            else{
+                $("#expression_textarea"+id_submit_entity_value).val("");
+                $("#expression_list").val();
+            }
         }
     });
 }

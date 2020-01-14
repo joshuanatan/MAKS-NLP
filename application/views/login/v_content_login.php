@@ -16,12 +16,12 @@
     <div class = "col-lg-6 offset-lg-3">
         <form action = "<?php echo base_url();?>welcome/auth" method = "POST">
             <div class = "form-group">
-                <h5>Username</h5>
-                <input type = "text" name = "email_user" class = "form-control">
+                <h5>User Email</h5>
+                <input required type = "email" name = "email_user" class = "form-control">
             </div>
             <div class = "form-group">
                 <h5>Password</h5>
-                <input type = "password" name = "password_user" class = "form-control">
+                <input required type = "password" name = "password_user" class = "form-control">
             </div>
             <button type = "submit" class = "btn btn-primary btn-sm">AUTHENTICATE</button>
         </form>

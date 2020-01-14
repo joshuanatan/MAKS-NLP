@@ -26,12 +26,6 @@ $wit_registered_account = isExistsInTable("tbl_wit_ai_acc",$where);
             <div>
                 <ul class="site-menu" data-plugin="menu">
                     <li class="site-menu-item">
-                        <a href="<?php echo base_url();?>setup">
-                            <i class="site-menu-icon wb-wrench" aria-hidden="true"></i>
-                            <span class="site-menu-title">Wit.ai Configuration</span>
-                        </a>
-                    </li>
-                    <li class="site-menu-item">
                         <a href="<?php echo base_url();?>user">
                             <i class="site-menu-icon wb-memory" aria-hidden="true"></i>
                             <span class="site-menu-title">User Administrator</span>
@@ -43,14 +37,12 @@ $wit_registered_account = isExistsInTable("tbl_wit_ai_acc",$where);
                             <span class="site-menu-title">Tokenization</span>
                         </a>
                     </li>
-                    <?php if(false):?>
                     <li class="site-menu-item">
-                        <a href="<?php echo base_url();?>documentation">
-                            <i class="site-menu-icon wb-book" aria-hidden="true"></i>
-                            <span class="site-menu-title">Endpoint</span>
+                        <a href="<?php echo base_url();?>setup">
+                            <i class="site-menu-icon wb-wrench" aria-hidden="true"></i>
+                            <span class="site-menu-title">Wit.ai Configuration</span>
                         </a>
                     </li>
-                    <?php endif;?>
                     <li class="site-menu-item has-sub">
                         <?php if($wit_registered_account == 1):?>
                         <a href="javascript:alert('Dont Have Any Active Wit.ai Account');window.location = '<?php echo base_url();?>setup'">

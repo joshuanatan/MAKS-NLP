@@ -88,6 +88,7 @@ class Entity extends CI_Controller{
                             "entity_name" => $this->input->post("entity_name".$a),
                             "entity_desc" => $this->input->post("entity_desc".$a),
                             "tgl_entity_last_modified" => date("Y-m-d H:i:s"),
+                            "status_aktif_entity" => 0, //diset fix tidak aktif
                             "id_user_entity_last_modified" => $this->session->id_user
                         );
                         $id_submit_entity = insertRow("tbl_entity",$data);
@@ -101,12 +102,14 @@ class Entity extends CI_Controller{
             
                         if($response){
                             if ($response["err"]) {
+                                //curl error
                                 $this->session->set_flashdata("status_wit","error");
                                 $this->session->set_flashdata("msg_wit",$response["err"]);
                             } 
                             else {
                                 $respond = json_decode($response["response"],true);
                                 if(!array_key_exists("error",$respond)){
+                                    //integrasi berhasil, ubah jadi aktif
                                     $msg = "Data is successfully added to Wit.ai";
                                     $this->session->set_flashdata("status_wit","success");
                                     $this->session->set_flashdata("msg_wit",$msg);
@@ -122,6 +125,7 @@ class Entity extends CI_Controller{
                                     $this->session->set_flashdata("msg_entity","Entity is successfully added");
                                 }
                                 else{
+                                    //integrasi error
                                     $this->session->set_flashdata("status_wit","error");
                                     $this->session->set_flashdata("msg_wit",$respond["error"]);
                                 }
@@ -155,6 +159,7 @@ class Entity extends CI_Controller{
         );
         $this->form_validation->set_rules($config);
         if($this->form_validation->run()){
+            /*check double entity in 1 id_wit_acc*/
             $where = array(
                 "entity_name" => $this->input->post("entity_name"),
                 "id_wit_ai_acc" => $this->id_wit_acc
@@ -163,8 +168,9 @@ class Entity extends CI_Controller{
                 "id_wit_ai_acc"
             );
             $check = selectRow("tbl_entity",$where,$field);
+            /*check if data exists*/
             if($check->num_rows() > 0){
-                
+                //kalau ada
                 $this->session->set_flashdata("status_wit","error");
                 $this->session->set_flashdata("msg_wit","Data Exists");
             }
@@ -178,7 +184,7 @@ class Entity extends CI_Controller{
                     else {
                         $respond = json_decode($response["response"],true);
                         if(!array_key_exists("error",$respond)){
-                            $msg = "Entity is successfully added to Wit.ai";
+                            $msg = "Entity is successfully updated to Wit.ai";
                             $this->session->set_flashdata("status_wit","success");
                             $this->session->set_flashdata("msg_wit",$msg);
     
@@ -227,18 +233,6 @@ class Entity extends CI_Controller{
 
         $response = $this->wit->delete_entities($entity_detail[0]["entity_name"]);
         if($response){
-            
-            $this->session->set_flashdata("status_wit","success");
-            $this->session->set_flashdata("msg_wit","Data is successfully removed from Wit.ai");
-            $where = array(
-                "id_submit_entity" => $id_submit_entity
-            );
-            $data = array(
-                "status_aktif_entity" => 0,
-                "tgl_entity_last_modified" => date("Y-m-d H:i:s"),
-                "id_user_entity_last_modified" => $this->session->id_user
-            );
-            updateRow("tbl_entity",$data,$where);
             if ($response["err"]) {
                 $this->session->set_flashdata("status_wit","error");
                 $this->session->set_flashdata("msg_wit",$response["err"]);
@@ -246,8 +240,20 @@ class Entity extends CI_Controller{
             else {
                 $respond = json_decode($response["response"],true);
                 if(!array_key_exists("error",$respond)){
-                    $this->session->set_flashdata("status_entity","success");
-                    $this->session->set_flashdata("msg_entity","Data is successfully deactivated");
+                    
+                    $this->session->set_flashdata("status_wit","error");
+                    $this->session->set_flashdata("msg_wit","Data is successfully removed from Wit.ai");
+                    $where = array(
+                        "id_submit_entity" => $id_submit_entity
+                    );
+                    $data = array(
+                        "status_aktif_entity" => 0,
+                        "tgl_entity_last_modified" => date("Y-m-d H:i:s"),
+                        "id_user_entity_last_modified" => $this->session->id_user
+                    );
+                    updateRow("tbl_entity",$data,$where);
+                    $this->session->set_flashdata("status_entity","error");
+                    $this->session->set_flashdata("msg_entity","Data is successfully deleted");
                 }
                 else{
                     $this->session->set_flashdata("status_wit","error");
@@ -270,19 +276,32 @@ class Entity extends CI_Controller{
 
         $response = $this->wit->delete_entities($entity_detail[0]["entity_name"]);
         if($response){
-            $this->session->set_flashdata("status_wit","success");
-            $this->session->set_flashdata("msg_wit","Data is successfully removed from Wit.ai");
-            $where = array(
-                "id_submit_entity" => $id_submit_entity
-            );
-            $data = array(
-                "status_aktif_entity" => 2,
-                "tgl_entity_last_modified" => date("Y-m-d H:i:s"),
-                "id_user_entity_last_modified" => $this->session->id_user
-            );
-            updateRow("tbl_entity",$data,$where);
-            $this->session->set_flashdata("status_entity","success");
-            $this->session->set_flashdata("msg_entity","Data is successfully deactivated");
+            if ($response["err"]) {
+                $this->session->set_flashdata("status_wit","error");
+                $this->session->set_flashdata("msg_wit",$response["err"]);
+            } 
+            else {
+                $respond = json_decode($response["response"],true);
+                if(!array_key_exists("error",$respond)){
+                    $this->session->set_flashdata("status_wit","error");
+                    $this->session->set_flashdata("msg_wit","Data is successfully removed from Wit.ai");
+                    $where = array(
+                        "id_submit_entity" => $id_submit_entity
+                    );
+                    $data = array(
+                        "status_aktif_entity" => 2,
+                        "tgl_entity_last_modified" => date("Y-m-d H:i:s"),
+                        "id_user_entity_last_modified" => $this->session->id_user
+                    );
+                    updateRow("tbl_entity",$data,$where);
+                    $this->session->set_flashdata("status_entity","error");
+                    $this->session->set_flashdata("msg_entity","Data is successfully deleted");
+                }
+                else{
+                    $this->session->set_flashdata("status_wit","error");
+                    $this->session->set_flashdata("msg_wit",$respond["error"]);
+                }
+            }
         }
         $this->redirect();
     }
@@ -410,6 +429,7 @@ class Entity extends CI_Controller{
                 );
                 $this->form_validation->set_rules($config);
                 if($this->form_validation->run()){
+                    /*check double valud*/
                     $where = array(
                         "entity_value" => $this->input->post("entity_value".$a),
                         "id_entity" => $this->session->id_submit_entity,
@@ -418,6 +438,7 @@ class Entity extends CI_Controller{
                         "entity_value"
                     );
                     $check = selectRow("tbl_entity_value",$where,$field);
+                    /*check double value*/
                     if($check->num_rows() > 0){
                         $this->session->set_flashdata("status_wit","error");
                         $this->session->set_flashdata("msg_wit","Data Exists");
@@ -481,6 +502,41 @@ class Entity extends CI_Controller{
         $this->redirect_values();
     
     }
+    public function insert_single_entity_value(){ //dipake di samples, buat insert value baru dari smaples yang ga ada
+
+        $entity_value = $this->input->post("entity_value");
+        $entity_name = $this->input->post("entity_name");
+        $id_entity = $this->input->post("id_entity");
+        $response = $this->wit->post_entities_value($entity_name,$entity_value,"");
+        $respond = json_decode($response["response"],true);
+        if(!array_key_exists("error",$respond)){
+            $data = array(
+                "id_entity" => $id_entity,
+                "entity_value" => $entity_value,
+                "tgl_entity_value_last_modified" => date("Y-m-d H:i:s"),
+                "status_aktif_entity_value" => 1,
+                "id_user_entity_value_last_modified" => $this->session->id_user
+            );
+            $id_entity_value = insertRow("tbl_entity_value",$data);
+            $response = array(
+                "id_entity_value" => $id_entity_value
+            );
+        }
+        echo json_encode($response);
+    }
+    public function insert_single_expression(){ //dipake di samples, buat insert value baru dari smaples yang ga ada
+
+        $id_entity_value = $this->input->post("id_entity_value");
+        $expression = $this->input->post("expression");
+        $data = array(
+            "id_entity_value" => $id_entity_value,
+            "entity_value_expression" => $expression,
+            "status_aktif_entity_value_expression" => 1,
+            "tgl_entity_value_expression_last_modified" => date("Y-m-d H:i:s"),
+            "id_user_entity_value_expression_last_modified" => $this->session->id_user
+        );
+        insertRow("tbl_entity_value_expression",$data);
+    }
     public function update_entity_value(){
         $this->check_session();
         $config = array(
@@ -514,46 +570,13 @@ class Entity extends CI_Controller{
             }
             else{
                 
-                
-                $entity_value = get1Value("tbl_entity_value","entity_value",array("id_submit_entity_value" => $this->input->post("id_submit_entity_value")));
-                $respond = $this->wit->delete_entities_value($this->session->entity,$entity_value);
-                
-                $entity_value = $this->input->post("entity_value");
                 $where = array(
                     "id_submit_entity_value" => $this->input->post("id_submit_entity_value")
                 );
-                $data = array(
-                    "entity_value" => $entity_value,
-                    "tgl_entity_value_last_modified" => date("Y-m-d H:i:s"),
-                    "id_user_entity_value_last_modified" => $this->session->id_user
-                );
-                updateRow("tbl_entity_value",$data,$where);
-                $this->session->set_flashdata("status_value","success");
-                $this->session->set_flashdata("msg_value","Value is successfully added, not activated");
-    
-                $expression = $this->input->post("expression");
-                $expression_list = explode(",",$expression);
-                $where = array(
-                    "id_entity_value" => $this->input->post("id_submit_entity_value")
-                );
-                $data = array(
-                    "status_aktif_entity_value_expression" => 0
-                );
-                updateRow("tbl_entity_value_expression",$data,$where);
-    
-                for($a = 0; $a<count($expression_list); $a++){
-                    $data = array(
-                        "id_entity_value" => $this->input->post("id_submit_entity_value"),
-                        "entity_value_expression" => $expression_list[$a],
-                        "status_aktif_entity_value_expression" => 1,
-                        "tgl_entity_value_expression_last_modified" => date("Y-m-d H:i:s"),
-                        "id_user_entity_value_expression_last_modified" => $this->session->id_user
-                    );
-                    insertRow("tbl_entity_value_expression",$data);
-                }
-                $this->session->set_flashdata("status_expression","success");
-                $this->session->set_flashdata("msg_expression","Expressions are successfully added");
-    
+                $entity_value = get1Value("tbl_entity_value","entity_value",$where);
+
+                //memastikan diwit.ai gak ada
+                $respond = $this->wit->delete_entities_value($this->session->entity,$entity_value);
                 $msg = "";
                 if($respond){
                     if($respond["err"]){
@@ -575,6 +598,10 @@ class Entity extends CI_Controller{
                         }
                     }
                 }
+                //mengupload entity kembali
+                $entity_value = $this->input->post("entity_value");
+                $expression = $this->input->post("expression");
+                $expression_list = explode(",",$expression);
                 $respond = $this->wit->post_entities_value($this->session->entity,$entity_value,$expression_list);
                 if($respond){
                     if($respond["err"]){
@@ -588,6 +615,41 @@ class Entity extends CI_Controller{
                             $msg .= "Value is successfully added to Wit.ai".". ";
                             $this->session->set_flashdata("status_wit","success");
                             $this->session->set_flashdata("msg_wit",$msg);
+                            
+                            $where = array(
+                                "id_submit_entity_value" => $this->input->post("id_submit_entity_value")
+                            );
+                            $data = array(
+                                "entity_value" => $entity_value,
+                                "tgl_entity_value_last_modified" => date("Y-m-d H:i:s"),
+                                "id_user_entity_value_last_modified" => $this->session->id_user
+                            );
+                            updateRow("tbl_entity_value",$data,$where);
+                            $this->session->set_flashdata("status_value","success");
+                            $this->session->set_flashdata("msg_value","Value is successfully added, not activated");
+
+                            $where = array(
+                                "id_entity_value" => $this->input->post("id_submit_entity_value")
+                            );
+                            $data = array(
+                                //deactive semua expressionnya
+                                "status_aktif_entity_value_expression" => 0
+                            );
+                            updateRow("tbl_entity_value_expression",$data,$where);
+                
+                            for($a = 0; $a<count($expression_list); $a++){
+                                $data = array(
+                                    "id_entity_value" => $this->input->post("id_submit_entity_value"),
+                                    "entity_value_expression" => $expression_list[$a],
+                                    "status_aktif_entity_value_expression" => 1,
+                                    "tgl_entity_value_expression_last_modified" => date("Y-m-d H:i:s"),
+                                    "id_user_entity_value_expression_last_modified" => $this->session->id_user
+                                );
+                                insertRow("tbl_entity_value_expression",$data);
+                            }
+                            $this->session->set_flashdata("status_expression","success");
+                            $this->session->set_flashdata("msg_expression","Expressions are successfully added");
+                
                         }
                         else{
                             $msg .= $respond["error"].". ";
@@ -609,17 +671,6 @@ class Entity extends CI_Controller{
     }
     public function delete_entity_value($id_submit_entity_value){
         $this->check_session();
-        $where = array(
-            "id_submit_entity_value" => $id_submit_entity_value
-        );
-        $data = array(
-            "status_aktif_entity_value" => 0,
-            "tgl_entity_value_last_modified" => date("Y-m-d H:i:s"),
-            "id_user_entity_value_last_modified" => $this->session->id_user
-        );
-        updateRow("tbl_entity_value",$data,$where);
-        $this->session->set_flashdata("status_value","success");
-        $this->session->set_flashdata("msg_value","Entity is successfully deactivate");
 
         $where = array(
             "id_submit_entity_value" => $id_submit_entity_value
@@ -643,8 +694,19 @@ class Entity extends CI_Controller{
                 
                 if(!array_key_exists("error",$respond)){
                     $msg .= "Value is successfully deleted from Wit.ai".". ";
-                    $this->session->set_flashdata("status_wit","success");
+                    $this->session->set_flashdata("status_wit","error");
                     $this->session->set_flashdata("msg_wit",$msg);
+                    $where = array(
+                        "id_submit_entity_value" => $id_submit_entity_value
+                    );
+                    $data = array(
+                        "status_aktif_entity_value" => 0,
+                        "tgl_entity_value_last_modified" => date("Y-m-d H:i:s"),
+                        "id_user_entity_value_last_modified" => $this->session->id_user
+                    );
+                    updateRow("tbl_entity_value",$data,$where);
+                    $this->session->set_flashdata("status_value","error");
+                    $this->session->set_flashdata("msg_value","Entity is successfully deactivated");
                 }
                 else{
                     $msg .= $respond["error"].". ";
@@ -657,17 +719,7 @@ class Entity extends CI_Controller{
     }
     public function remove_entity_value($id_submit_entity_value){
         $this->check_session();
-        $where = array(
-            "id_submit_entity_value" => $id_submit_entity_value
-        );
-        $data = array(
-            "status_aktif_entity_value" => 2,
-            "tgl_entity_value_last_modified" => date("Y-m-d H:i:s"),
-            "id_user_entity_value_last_modified" => $this->session->id_user
-        );
-        updateRow("tbl_entity_value",$data,$where);
-        $this->session->set_flashdata("status_value","success");
-        $this->session->set_flashdata("msg_value","Entity is successfully deactivate");
+        
 
         $where = array(
             "id_submit_entity_value" => $id_submit_entity_value
@@ -691,8 +743,19 @@ class Entity extends CI_Controller{
                 $respond = json_decode($respond["response"],true);
                 if(!array_key_exists("error",$respond)){
                     $msg .= "Value is successfully deleted from Wit.ai".". ";
-                    $this->session->set_flashdata("status_wit","success");
+                    $this->session->set_flashdata("status_wit","error");
                     $this->session->set_flashdata("msg_wit",$msg);
+                    $where = array(
+                        "id_submit_entity_value" => $id_submit_entity_value
+                    );
+                    $data = array(
+                        "status_aktif_entity_value" => 2,
+                        "tgl_entity_value_last_modified" => date("Y-m-d H:i:s"),
+                        "id_user_entity_value_last_modified" => $this->session->id_user
+                    );
+                    updateRow("tbl_entity_value",$data,$where);
+                    $this->session->set_flashdata("status_value","error");
+                    $this->session->set_flashdata("msg_value","Entity is successfully deleted");
                 }
                 else{
                     $msg .= $respond["error"].". ";
@@ -705,17 +768,7 @@ class Entity extends CI_Controller{
     }
     public function reupload_entity_value($id_submit_entity_value){
         $this->check_session();
-        $where = array(
-            "id_submit_entity_value" => $id_submit_entity_value
-        );
-        $data = array(
-            "status_aktif_entity_value" => 1,
-            "tgl_entity_value_last_modified" => date("Y-m-d H:i:S")
-        );
-        updateRow("tbl_entity_value",$data,$where);
-        $this->session->set_flashdata("status_value","success");
-        $this->session->set_flashdata("msg_value","Entity is successfully activated");
-
+        
         $where = array(
             "id_submit_entity_value" => $id_submit_entity_value
         );
@@ -753,6 +806,17 @@ class Entity extends CI_Controller{
                     $msg .= "Value is successfully added to Wit.ai".". ";
                     $this->session->set_flashdata("status_wit","success");
                     $this->session->set_flashdata("msg_wit",$msg);
+                    $where = array(
+                        "id_submit_entity_value" => $id_submit_entity_value
+                    );
+                    $data = array(
+                        "status_aktif_entity_value" => 1,
+                        "tgl_entity_value_last_modified" => date("Y-m-d H:i:S")
+                    );
+                    updateRow("tbl_entity_value",$data,$where);
+                    $this->session->set_flashdata("status_value","success");
+                    $this->session->set_flashdata("msg_value","Entity is successfully activated");
+            
                 }
                 else{
                     $msg .= $respond["error"].". ";

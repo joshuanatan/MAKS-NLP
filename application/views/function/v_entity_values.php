@@ -84,12 +84,12 @@
                 </td>
                 <td>
                     <?php if($entity_values[$a]["status_aktif_entity_value"] == 1):?>
-                    <button type = "button" data-toggle = "modal" data-target = "#editExpression" class = "btn btn-primary btn-sm col-lg-12" onclick = "loadIntent(<?php echo $entity_values[$a]['id_submit_entity_value'];?>);loadExpression(<?php echo $entity_values[$a]['id_submit_entity_value'];?>)">EDIT VALUE</button>
+                    <button type = "button" data-toggle = "modal" data-target = "#editExpression<?php echo $a;?>" class = "btn btn-primary btn-sm col-lg-12" onclick = "loadIntent(<?php echo $entity_values[$a]['id_submit_entity_value'];?>);loadExpression(<?php echo $entity_values[$a]['id_submit_entity_value'];?>)">EDIT VALUE</button>
                     <a href = "<?php echo base_url();?>function/entity/delete_entity_value/<?php echo $entity_values[$a]["id_submit_entity_value"];?>" class = "btn btn-danger btn-sm col-lg-12">DEACTIVE VALUE</a>
+                    <a href = "<?php echo base_url();?>function/entity/remove_entity_value/<?php echo $entity_values[$a]["id_submit_entity_value"];?>" class = "btn btn-dark btn-sm col-lg-12">DELETE VALUE</a>
                     <?php else:?>
                     <a href = "<?php echo base_url();?>function/entity/reupload_entity_value/<?php echo $entity_values[$a]["id_submit_entity_value"];?>" class = "btn btn-primary btn-sm col-lg-12">REUPLOAD VALUE</a>
                     <?php endif;?>
-                    <a href = "<?php echo base_url();?>function/entity/remove_entity_value/<?php echo $entity_values[$a]["id_submit_entity_value"];?>" class = "btn btn-dark btn-sm col-lg-12">DELETE VALUE</a>
                 </td>
             </tr>
             <?php endfor;?>
@@ -134,7 +134,7 @@
     </div>
 </div>
 <?php for($a = 0; $a<count($entity_values); $a++):?>
-<div class = "modal fade" id = "editExpression">
+<div class = "modal fade" id = "editExpression<?php echo $a;?>">
     <div class = "modal-dialog modal-center">
         <div class = "modal-content">
             <div class = "modal-header">
@@ -142,14 +142,14 @@
             </div>
             <div class = "modal-body">  
                 <form action = "<?php echo base_url();?>function/entity/update_entity_value" method = "POST"> 
-                    <input type = "hidden" id = "id_entity_value" name = "id_submit_entity_value">
+                    <input type = "hidden" id = "id_entity_value" name = "id_submit_entity_value" value = "<?php echo $entity_values[$a]["id_submit_entity_value"];?>">
                     <div class = "form-group">
                         <h5>Value</h5>
                         <input required type = "text" class = "form-control" name = "entity_value" id = "new_intent" value = "<?php echo $entity_values[$a]["entity_value"];?>">
                     </div>
                     <div class = "form-group">
                         <h5>Entity Expression <i>Separate every expression with comma </i><strong>[ , ]</strong></h5>
-                        <textarea class = "form-control" name = "expression" id = "expression_textarea">Please wait, data is loading...</textarea>
+                        <textarea class = "form-control expression_list" name = "expression" id = "expression_textarea<?php echo $entity_values[$a]["id_submit_entity_value"];?>">Please wait, data is loading...</textarea>
                     </div>
                     <button type = "submit" class = "btn btn-primary btn-sm">SUBMIT</button>
                 </form>
@@ -167,7 +167,7 @@
             <div class = "modal-body">
                 <div class = "form-group">
                     <h5>Entity Value Expression</h5>
-                    <textarea readonly class = "form-control" name = "expression" id = "expression_list">Please wait, data is loading...</textarea>
+                    <textarea readonly class = "form-control expression_list" name = "expression" id = "expression_list">Please wait, data is loading...</textarea>
                 </div>
             </div>
         </div>

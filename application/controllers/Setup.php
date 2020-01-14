@@ -194,7 +194,7 @@ class Setup extends CI_Controller{
         );
         updateRow("tbl_wit_ai_acc",$data,$where);
         $this->session->set_flashdata("status","error");
-        $this->session->set_flashdata("msg","Data is successfully deactivated");
+        $this->session->set_flashdata("msg","Data is successfully deleted");
         redirect("setup");
     }
     public function deactive($id_submit_wit_ai_acc){
