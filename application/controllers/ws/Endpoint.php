@@ -33,7 +33,6 @@ class Endpoint extends CI_Controller{
                      #memeriksa keberhasilan komunikasi
                      if ($response["err"]) {
                         #komunikasi gagal, tidak terjadi komunikasi keluar sistem
-                        log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_text_meaning")),"ERROR","REQUEST IS NOT SEND. Err: ".$response["err"]);
                         $data = array(
                             "error" => "true",
                             "status" => "error",
@@ -50,9 +49,6 @@ class Endpoint extends CI_Controller{
                         
                          #melihat array key "msg_id" sebagai tanda teks berhasil di ekstrak
                          if(array_key_exists("msg_id",$respond)){
-                            
-                            #melakukan logging
-                            log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_text_meaning")),"SUCCESS","TEXT EXTRACTION SUCCESS");
 
                             #[begin] reform respon dari Wit.ai menjadi format yang sesuai dengan WSDL
                             foreach($respond["entities"] as $key => $value){
@@ -75,7 +71,6 @@ class Endpoint extends CI_Controller{
                          }
                          else{
                             #respon error dari Wit.ai
-                            log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_text_meaning")),"ERROR","TEXT EXTRACTION FAILED. Err: ".$respond["error"]);
                             $data = array(
                                 "error" => "true",
                                 "status" => "error",
@@ -89,7 +84,6 @@ class Endpoint extends CI_Controller{
 
             else{
                 #respon error apabila token tidak ditemukan / tidak memiliki hak akses
-                log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_text_meaning")),"ERROR","TOKEN IS NOT RECOGNIZED / NO PRIVILEGE IS GRANTED");
                 $data = array(
                     "error" => "true",
                     "status" => "error",
@@ -101,7 +95,6 @@ class Endpoint extends CI_Controller{
 
         else{
             #respon error apabila tidak ada key client-token dalam header
-            log_endpoint("-",get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_text_meaning")),"ERROR","TOKEN IS NOT PROVIDED");
             $response = array(
                 "error" => "true",
                 "status" => "error",
@@ -134,7 +127,6 @@ class Endpoint extends CI_Controller{
                 $result = selectRow("tbl_entity",$where,$field);
                 
                 if($result->num_rows() > 0){
-                    log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_entity")),"SUCCESS","DATA IS FOUND");
                     $entity_array = $result->result_array();
                     $response = array(
                         "status" => "success",
@@ -143,7 +135,6 @@ class Endpoint extends CI_Controller{
                     );
                 }
                 else{
-                    log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_entity")),"ERROR","DATA IS NOT FOUND");
                     $response = array(
                         "error" => "true",
                         "status" => "error",
@@ -153,7 +144,6 @@ class Endpoint extends CI_Controller{
                 }
             }
             else{
-                log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_entity")),"ERROR","TOKEN IS NOT RECOGNIZED / NO PRIVILEGE IS GRANTED");
                 $response = array(
                     "error" => "true",
                     "status" => "error",
@@ -163,7 +153,6 @@ class Endpoint extends CI_Controller{
             }
         }
         else{
-            log_endpoint("-",get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_entity")),"ERROR","TOKEN IS NOT PROVIDED");
             $response = array(
                 "error" => "true",
                 "status" => "error",
@@ -189,7 +178,6 @@ class Endpoint extends CI_Controller{
                 );
                 $result = selectRow("detail_intent",$where,$field);
                 if($result->num_rows() > 0){
-                    log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_intent")),"SUCCESS","DATA IS FOUND");
                     $response = array(
                         "status" => "success",
                         "msg" => "DATA FOUND",
@@ -197,7 +185,6 @@ class Endpoint extends CI_Controller{
                     );
                 }
                 else{
-                    log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_intent")),"ERROR","DATA IS NOT FOUND");
                     $response = array(
                         "error" => "true",
                         "status" => "error",
@@ -207,7 +194,6 @@ class Endpoint extends CI_Controller{
                 }
             }
             else{
-                log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_intent")),"ERROR","TOKEN IS NOT RECOGNIZED / NO PRIVILEGE IS GRANTED");
                 $response = array(
                     "error" => "true",
                     "status" => "error",
@@ -217,7 +203,6 @@ class Endpoint extends CI_Controller{
             } 
         }  
         else{
-            log_endpoint("-",get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_intent")),"ERROR","TOKEN IS NOT PROVIDED");
             $response = array(
                 "error" => "true",
                 "status" => "error",
@@ -242,7 +227,6 @@ class Endpoint extends CI_Controller{
             $result = selectRow("tbl_entity",$where,$field);
             
             if($result->num_rows() > 0){
-                log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_entity")),"SUCCESS","DATA IS FOUND");
                 $entity_array = $result->result_array();
                 $response = array(
                     "status" => "success",
@@ -251,7 +235,6 @@ class Endpoint extends CI_Controller{
                 );
             }
             else{
-                log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_entity")),"ERROR","DATA IS NOT FOUND");
                 $response = array(
                     "error" => "true",
                     "status" => "error",
@@ -261,7 +244,6 @@ class Endpoint extends CI_Controller{
             }
         }
         else{
-            log_endpoint("-",get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_entity")),"ERROR","TOKEN IS NOT PROVIDED");
             $response = array(
                 "error" => "true",
                 "status" => "error",
@@ -286,7 +268,6 @@ class Endpoint extends CI_Controller{
             $result = selectRow("detail_intent",$where,$field);
             
             if($result->num_rows() > 0){
-                log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_entity")),"SUCCESS","DATA IS FOUND");
                 $entity_array = $result->result_array();
                 $response = array(
                     "status" => "success",
@@ -295,7 +276,6 @@ class Endpoint extends CI_Controller{
                 );
             }
             else{
-                log_endpoint($headers["client-token"],get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_entity")),"ERROR","DATA IS NOT FOUND");
                 $response = array(
                     "error" => "true",
                     "status" => "error",
@@ -305,7 +285,6 @@ class Endpoint extends CI_Controller{
             }
         }
         else{
-            log_endpoint("-",get1Value("endpoint_documentation","endpoint_token",array("endpoint_name" => "get_entity")),"ERROR","TOKEN IS NOT PROVIDED");
             $response = array(
                 "error" => "true",
                 "status" => "error",
