@@ -70,7 +70,7 @@ function getSamplesEntity(id_submit_samples){
         success:function(respond){
             var html = "";
             for(var a = 0; a<respond.length; a++){
-                html += "<tr><td>"+(a+1)+"</td><td>"+respond[a]["entity_value"]+"</td><td>"+respond[a]["entity_name"]+"</td><td>"+respond[a]["start_index"]+"</td><td>"+respond[a]["end_index"]+"</td><td>"+text.substr(respond[a]["start_index"],(respond[a]["end_index"]-respond[a]["start_index"]))+"</td></tr>";
+                html += "<tr><td>"+(a+1)+"</td><td>"+respond[a]["entity_name"]+"</td><td>"+respond[a]["entity_value"]+"</td><td>"+respond[a]["start_index"]+"</td><td>"+respond[a]["end_index"]+"</td><td>"+text.substr(respond[a]["start_index"],(respond[a]["end_index"]-respond[a]["start_index"]))+"</td></tr>";
             }
             $("#sample_entity_detail_container").html(html);
         }

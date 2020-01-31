@@ -36,6 +36,7 @@
 <div class="page-body">
     <button type = "button" class = "btn btn-primary btn-sm" data-toggle = "modal" data-target = "#tambahSamples">+ ADD SAMPLES</button>
     <a href = "<?php echo base_url();?>function/samples/recycle_bin" class = "btn btn-light btn-sm"><i class = "icon wb-trash"></i></a>
+    <button type = "button" class = "btn btn-primary btn-sm" data-toggle = "modal" data-target = "#tryGetTextMeaning">TRY <i>get_text_meaning</I> SERVICE</button>
     <br/><br/>
     <table class = "table table-striped table-hover table-bordered" id = "table_driver" data-plugin = "dataTable">
         <thead>
@@ -140,6 +141,24 @@
 
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class = "modal fade" id = "tryGetTextMeaning">
+    <div class = "modal-dialog modal-center modal-lg">
+        <div class = "modal-content">
+            <div class = "modal-header">
+                <h4>TRIAL <i>get_text_meaning</i> Service</h4>
+            </div>
+            <div class = "modal-body">
+                <form action = "<?php echo base_url();?>function/samples/trial" method = "POST" target = "_blank">
+                    <div class = "form-group">
+                        <h5>Request</h5>
+                        <input type = "text" class = "form-control" name = "request">
+                    </div>
+                    <button type = "submit" class = "btn btn-primary btn-sm">SUBMIT</button>
+                </form>
             </div>
         </div>
     </div>

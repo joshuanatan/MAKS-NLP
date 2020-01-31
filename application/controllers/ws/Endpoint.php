@@ -131,5 +131,30 @@ class Endpoint extends CI_Controller{
         }
         echo json_encode($response);
     }
+    public function get_entity_list(){
+        $where = array(
+            "status_aktif_entity" => 1
+        );
+        $field = array(
+            "entity_name"
+        );
+        $result = selectRow("tbl_entity",$where,$field);
+        $response = array();
+        if($result->num_rows() > 0){
+            $response = array(
+                "status" => "success",
+                "msg" => "Entity Found",
+                "data" => $result->result_array()
+            );
+        }
+        else{
+            $response = array(
+                "error" => "true",
+                "status" => "error",
+                "msg" => "Entity Not Found"
+            );
+        }
+        echo json_encode($response);
+    }
 }
 ?>

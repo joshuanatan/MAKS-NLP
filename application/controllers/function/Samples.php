@@ -2,6 +2,8 @@
 date_default_timezone_set("Asia/Bangkok");
 class Samples extends CI_Controller{
     private $id_wit_acc;
+    private $get_dataset_trial_url = "http://127.0.0.1:8888/project/maks/maks_nlp/ws/endpoint/get_text_meaning";
+    private $get_dataset_trial_token = "6531f4480269e4f0e6d694707bf6ba42";
     public function __construct(){
         parent::__construct();
         $this->load->library("curl");
@@ -155,6 +157,7 @@ class Samples extends CI_Controller{
                         $response = $this->curl->post($url,array(),$body);
                         $respond = json_decode($response["response"],true);
                         $id_entity_value = $respond["id_entity_value"];
+                        print_r($respond);
                     }
                     else{
                         $where = array(
@@ -239,7 +242,6 @@ class Samples extends CI_Controller{
                         $this->session->set_flashdata("msg_wit",$msg);
                     }
                 }
-                $this->redirect();
             }
         }
         else{
@@ -413,6 +415,20 @@ class Samples extends CI_Controller{
 			$this->session->set_flashdata("msg_login",$msg);
 			redirect("welcome");
 		}
-	}
+    }
+    public function trial(){
+        $request = $this->input->post("request");
+        $url = $this->get_dataset_trial_url;
+        $header = array(
+            "client-token:".$this->get_dataset_trial_token
+        );
+        $body = array(
+            "search_text" => $request
+        );
+        $response = $this->curl->post($url,$header,$body);
+        header("content-type:application/json");
+        //echo $encode;
+        echo $response["response"];
+    }
 }
 ?>

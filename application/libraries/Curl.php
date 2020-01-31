@@ -41,8 +41,9 @@ class Curl{
             CURLOPT_HTTPHEADER => $header,
             CURLOPT_POSTFIELDS => $body
         ));
-        $response = curl_exec($curl);
-        return json_decode($response,true);
+        $response["response"] = curl_exec($curl);
+        $response["err"] = curl_error($curl);
+        return $response;
     }
 }
 ?>

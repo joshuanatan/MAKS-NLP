@@ -5,6 +5,7 @@ class Entity extends CI_Controller{
     public function __construct(){ 
         parent::__construct();
         $this->load->library('wit');
+        $this->load->library('curl');
         $where = array(
             "status_aktif_wit_ai_acc" => 1
         );
@@ -499,7 +500,7 @@ class Entity extends CI_Controller{
                 }
             }
         }
-        $this->redirect_values();
+        //$this->redirect_values();
     
     }
     public function insert_single_entity_value(){ //dipake di samples, buat insert value baru dari smaples yang ga ada
@@ -842,5 +843,5 @@ class Entity extends CI_Controller{
 			$this->session->set_flashdata("msg_login",$msg);
 			redirect("welcome");
 		}
-	}
+    }
 }

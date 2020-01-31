@@ -3,7 +3,7 @@ class Entity extends CI_Controller{
     public function load_values(){
         $where = array(
             "entity_name" => $this->input->post("id_entity"),
-            
+            "status_aktif_entity_value" => 1
         );
         $field = array(
             "id_submit_entity_value","entity_value"
@@ -33,7 +33,8 @@ class Entity extends CI_Controller{
     }
     public function get_entity_value(){
         $where = array(
-            "id_submit_entity_value" => $this->input->post("id_entity_value")
+            "id_submit_entity_value" => $this->input->post("id_entity_value"),
+            "status_aktif_entity_value" => 1
         );
         $field = array(
             "entity_value"
