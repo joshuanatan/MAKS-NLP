@@ -193,7 +193,6 @@ class Samples extends CI_Controller{
 
             $b = 0;
             if($checks != ""){
-                $b++;
                 foreach($checks as $a){
                     $entity[$b]["entity"] = $this->input->post("entity_name".$a);
                     if($this->input->post("entityValue".$a) == "0"){
@@ -204,6 +203,7 @@ class Samples extends CI_Controller{
                     }
                     $entity[$b]["start"] = $this->input->post("startIndex".$a);
                     $entity[$b]["end"] = $this->input->post("endIndex".$a);
+                    $b++;
                 }
             }
             $entities = $entity;
