@@ -162,6 +162,7 @@ class Samples extends CI_Controller{
                     else{
                         $where = array(
                             "entity_value" => $this->input->post("entityValue".$a),
+                            "entity_name" => $this->input->post("entity_name".$a),
                             "status_aktif_entity_value" => 1,
                             "status_aktif_entity" => 1
                         );
