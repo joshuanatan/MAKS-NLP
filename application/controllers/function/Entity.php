@@ -500,7 +500,7 @@ class Entity extends CI_Controller{
                 }
             }
         }
-        //$this->redirect_values();
+        $this->redirect_values();
     
     }
     public function insert_single_entity_value(){ //dipake di samples, buat insert value baru dari smaples yang ga ada

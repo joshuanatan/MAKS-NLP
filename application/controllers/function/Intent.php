@@ -369,6 +369,41 @@ class Intent extends CI_Controller{
 			$this->session->set_flashdata("msg_login",$msg);
 			redirect("welcome");
 		}
-	}
+    }
+    public function check_intent(){
+        $respond = $this->wit->get_entity_detail("intent");
+        if($respond["err"]){
+            $msg = $respond["err"];
+            echo $msg;
+        }
+        else{
+            $respond = json_decode($respond["response"],true);
+            if(!array_key_exists("error",$respond)){
+                echo "Entity Name Intent is exists.. continue";
+            }
+            else{
+                $msg = $respond["error"];
+                echo $msg;
+                
+                $id = "intent";
+                $doc = "";
+                $response = $this->wit->post_entities($id,$doc);
+                if($response){
+                    if ($response["err"]) {
+                        echo "fail making request intent";
+                    }
+                    else{
+                        $respond = json_decode($response["response"],true);
+                        if(!array_key_exists("error",$respond)){
+                            echo "Intent is uploaded";
+                        }
+                        else{
+                            echo "fail uploading entity name intent";
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 ?>

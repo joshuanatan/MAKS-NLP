@@ -46,7 +46,31 @@ class Wit{
      
     /*entities*/
     public function get_entities(){}
-    public function get_entites_detail(){}
+    public function get_entity_detail($id = ""){
+        if($id == ""){
+            return false;
+        }
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.wit.ai/entities/".$id,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "content-type: application/json",
+                "Authorization: Bearer ".$this->server_access_token
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        $respond["err"] = $err;
+        $respond["response"] = $response;
+        curl_close($curl);
+        return $respond;
+    }
     
     public function post_entities($id = "", $doc = ""){
         if($id != ""){

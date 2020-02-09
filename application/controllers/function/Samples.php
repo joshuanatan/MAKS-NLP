@@ -161,12 +161,14 @@ class Samples extends CI_Controller{
                     }
                     else{
                         $where = array(
-                            "entity_value" => $this->input->post("entityValue".$a)
+                            "entity_value" => $this->input->post("entityValue".$a),
+                            "status_aktif_entity_value" => 1,
+                            "status_aktif_entity" => 1
                         );
                         $field = array(
                             "id_submit_entity_value"
                         );
-                        $result = selectRow("tbl_entity_value",$where,$field);
+                        $result = selectRow("detail_entity",$where,$field);
                         $result = $result->row();
                         $id_entity_value = $result->id_submit_entity_value;
 
@@ -348,11 +350,11 @@ class Samples extends CI_Controller{
         $field = array(
             "samples","intent"
         );
-        $result = selectRow("detail_samples",$where,$field,"","","","","id_submit_samples");
+        $result = selectRow("detail_samples",$where,$field);
         $result_array = $result->result_array();
 
         $entity_array[0]["entity"] = "intent";
-        $entity_array[0]["value"] = $result_array[0]["intent_entity_value"];
+        $entity_array[0]["value"] = $result_array[0]["intent"];
 
         $where = array(
             "id_samples" => $id_submit_samples
@@ -382,6 +384,7 @@ class Samples extends CI_Controller{
         }
         else{
             $response = json_decode($respond["response"],TRUE);
+            print_r($response);
             if(array_key_exists("error",$response)){
                 $msg = $response["error"]." Samples is not uploaded. Consider re-add the sample";
                 $this->session->set_flashdata("status_samples","error");
