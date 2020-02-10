@@ -3,7 +3,7 @@ date_default_timezone_set("Asia/Bangkok");
 class Samples extends CI_Controller{
     private $id_wit_acc;
     private $get_dataset_trial_url = "http://127.0.0.1:8888/project/maks/maks_nlp/ws/endpoint/get_text_meaning";
-    private $get_dataset_trial_token = "6531f4480269e4f0e6d694707bf6ba42";
+    private $get_dataset_trial_token = "c1852fb45a10a4c7945e805f348b09c1";
     public function __construct(){
         parent::__construct();
         $this->load->library("curl");
@@ -194,7 +194,7 @@ class Samples extends CI_Controller{
                 }
             }
 
-            $b = 0;
+            $b = 1;
             if($checks != ""){
                 foreach($checks as $a){
                     $entity[$b]["entity"] = $this->input->post("entity_name".$a);
